@@ -1,0 +1,194 @@
+openapi: 3.0.3
+info:
+  version: '0.1'
+  title: Hello World
+  description: Introducing open api 3.0.3
+
+paths:
+  /hello:
+    get:
+      tags:
+        - Demo
+      operationId: src.hello.hello_world
+      description: Returns hello world string.
+      responses:
+        '200':
+          description: 'Success'
+
+  /model_info:
+    get:
+      tags:
+        - Demo
+      operationId: src.model.model_info
+      description: Returns information about our model
+      responses:
+        '200':
+          description: 'Success'
+
+  /sum/{arg1}/{arg2}:
+    get:
+      tags:
+        - Demo
+      operationId: src.sum.sum
+      description: Returns the sum of two numbers.
+      parameters:
+        - in: path
+          name: arg1
+          schema:
+            type: integer
+          required: true
+          description: First integer to sum
+        - in: path
+          name: arg2
+          schema:
+            type: integer
+          required: true
+          description: Second integer to sum 
+      responses:
+        '200':
+          description: 'Success'
+#test line
+
+  
+  /file:
+    post:
+      tags:
+        - File
+      summary: Upload a file
+      operationId: src.file.upload
+      parameters:
+        - name: filename
+          in: query
+          description: filename to be uploaded
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+  
+  /list:
+    get:
+      tags:
+        - File
+      operationId: src.file.list_files
+      description: Returns the list of files in the server
+      responses:
+        '200':
+          description: 'Success'
+  
+  /readfile:
+    get:
+      tags:
+        - File
+      summary: Read a file
+      operationId : src.file.txtfile
+      parameters:
+        - name: filename
+          in: query
+          description: reading text  from file
+          required: true
+          schema:
+            type: string
+      responses:
+        '405':
+          description: Invalid input
+
+  /prediction:
+    post:
+      tags:
+        - Model
+      summary: Generates a prediction using an uploaded file
+      operationId : src.model.file_predict
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '405':
+          description: Invalid input
+  /performance:
+    post:
+      tags:
+        - Model
+      summary: Generates the accuracy of the model given test data (feature(X) and label(Y) files)
+      operationId: src.model.model_accuracy
+      requestBody:
+        content:
+          multipart/form-data:
+           schema:
+              type: object
+              properties:
+                file_x:
+                  type: string
+                  format: binary
+                  description: Feature (X) file to upload
+                file_y:
+                  type: string
+                  format: binary
+                  description: Label (Y) file to upload
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accuracy:
+                    type: number
+                    format: float
+                    description: The accuracy of the model
+        '400':
+          description: 'Invalid input'
+
+  /figure:
+      get:
+        tags:
+          - Figure
+        operationId: src.figure.disp_plot
+        description: Returns a histogram of the data file
+        parameters:
+          - name: filename
+            in: query
+            description: name of file present on server
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: 'Success'
+            content:
+              image/png:
+                schema:
+                  type: string
+                  format: binary
+          '400':
+            description: 'Bad Request'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: 'Invalid input'
+
+  
+
+servers:
+  - url: 'http://localhost:8080/e222'
